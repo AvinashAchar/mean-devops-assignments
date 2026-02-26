@@ -1,37 +1,45 @@
 const express = require("express");
-//const cors = require("cors");
+const cors = require("cors");
 
 const app = express();
 
-// parse requests of content-type - application/json
+// Enable CORS
+app.use(cors({ origin: "*" }));
+
+// Parse JSON requests
 app.use(express.json());
 
-// parse requests of content-type - application/x-www-form-urlencoded
+// Parse URL-encoded requests
 app.use(express.urlencoded({ extended: true }));
 
+// Import database
 const db = require("./app/models");
+
+// Connect to MongoDB
 db.mongoose
   .connect(db.url, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   })
   .then(() => {
     console.log("Connected to the database!");
   })
-  .catch(err => {
+  .catch((err) => {
     console.log("Cannot connect to the database!", err);
-    process.exit();
+
   });
 
-// simple route
+// Simple test route
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to Test application." });
 });
 
-require("./app/routes/turorial.routes")(app);
-
-// set port, listen for requests
+// 🔥 IMPORTANT: Register Tutorial Routes
+require("./app/routes/tutorial.routes")(app);
+// Set PORT
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
+
+// Start server
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}.`);
 });
