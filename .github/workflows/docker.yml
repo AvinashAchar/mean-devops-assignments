@@ -27,3 +27,15 @@ jobs:
 
       - name: Push Backend Image
         run: docker push avinashachar/mean-backend
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd mean-app
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
